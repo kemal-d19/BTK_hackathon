@@ -15,7 +15,6 @@ class WebGame(BaseModel):
     html_code : str 
     explanation : str
 
-# gemini_api = "AIzaSyBtw-Ks9__zOwgnEZhOWR59ZN_ckuj58DA"
 
 # llm = ChatGoogleGenerativeAI(
 #     model="gemini-2.5-flash-lite",
