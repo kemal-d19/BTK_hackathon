@@ -1,0 +1,373 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game To Learn</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            resize: vertical;
+            min-height: 120px;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .examples {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .examples h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .example-item {
+            background: white;
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            font-size: 14px;
+            border: 1px solid #e1e5e9;
+        }
+
+        .example-item:hover {
+            background-color: #667eea;
+            color: white;
+        }
+
+        .generate-btn {
+            width: 100%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .generate-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result {
+            display: none;
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .error {
+            display: none;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            color: #721c24;
+        }
+
+        .play-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .play-btn:hover {
+            background: #218838;
+        }
+
+
+
+        .popup-overlay {
+        display: none; /* hidden by default */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1;
+        }
+
+        /* Style the popup box */
+        .popup-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        z-index: 2;
+        width: 800px;
+        }
+
+        /* Close button */
+        .close-btn {
+        background-color: #ff5e5e;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        cursor: pointer;
+        border-radius: 5px;
+        }
+
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Game To Learn</h1>
+        <p class="subtitle">Tell us the what do want to learn, practice and let AI create a game for you!</p>
+        
+        <form id="gameForm">
+            <div class="form-group">
+                <label for="prompt">Describe your topic or question.</label>
+                <textarea 
+                    id="prompt" 
+                    name="prompt" 
+                    placeholder="Example: Create a simple snake game where the player controls a snake to eat food and grow longer, avoiding walls and its own body..."
+                    required
+                ></textarea>
+                
+                <!-- <div class="examples">
+                    <h3>💡 Example Ideas (click to use):</h3>
+                    <div class="example-item" onclick="setPrompt('Create a simple Tetris-like puzzle game where blocks fall and the player needs to arrange them to clear lines')">🧩 Tetris-style puzzle game</div>
+                    <div class="example-item" onclick="setPrompt('Make a space shooter game where the player controls a spaceship and shoots at incoming asteroids')">🚀 Space shooter game</div>
+                    <div class="example-item" onclick="setPrompt('Create a memory card matching game with colorful cards that flip when clicked')">🃏 Memory matching game</div>
+                    <div class="example-item" onclick="setPrompt('Build a simple platform jumper game where the player jumps between platforms to reach the top')">🦘 Platform jumper game</div>
+                    <div class="example-item" onclick="setPrompt('Make a word guessing game similar to Wordle where players guess a hidden word')">📝 Word guessing game</div>
+                </div> -->
+            </div>
+            
+            <button type="submit" class="generate-btn" id="generateBtn">
+                🤖 Generate Game with AI
+            </button>
+        </form>
+        
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <p>AI is creating your game... This may take a few moments!</p>
+        </div>
+        
+        <div class="result" id="result">
+            <h3>🎉 Game Generated Successfully!</h3>
+            <p>Your game has been created and is ready to play.</p>
+            <button class="play-btn" id="playBtn" onclick="playGame()">
+                🎮 Play Game in New Tab
+            </button>
+            <!-- Popup Structure -->
+            <div id="popup" class="popup-overlay">
+                <div class="popup-content">
+                    <h1>Game explanation</h1>
+                    <p id="popup-text">This is an informational popup!</p>
+                    <button class="close-btn" onclick="closePopup()">Close</button>
+                </div>
+            </div>
+
+
+
+        </div>
+        
+        <div class="error" id="error">
+            <h3>❌ Error</h3>
+            <p id="errorMessage"></p>
+        </div>
+    </div>
+
+    <script>
+        let currentGameId = null;
+        let gameExplanation = null;
+
+
+        function showPopup() {
+        document.getElementById("popup").style.display = "block";
+        document.getElementById("popup-text").innerHTML = gameExplanation;
+        }
+
+        function closePopup() {
+        document.getElementById("popup").style.display = "none";
+        }
+
+        function setPrompt(text) {
+            document.getElementById('prompt').value = text;
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+            document.getElementById('generateBtn').disabled = show;
+        }
+
+        function showResult(show) {
+            document.getElementById('result').style.display = show ? 'block' : 'none';
+        }
+
+        function showExplanation(show) {
+
+        }
+
+        function showError(show, message = '') {
+            document.getElementById('error').style.display = show ? 'block' : 'none';
+            if (message) {
+                document.getElementById('errorMessage').textContent = message;
+            }
+        }
+
+        function playGame() {
+            if (currentGameId) {
+                showPopup()
+                window.open(`/play/${currentGameId}`, '_blank');
+            }
+        }
+
+        document.getElementById('gameForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const prompt = document.getElementById('prompt').value.trim();
+            if (!prompt) {
+                alert('Please enter a game description!');
+                return;
+            }
+
+            showLoading(true);
+            showResult(false);
+            showError(false);
+
+            try {
+                const response = await fetch('/generate_game', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ prompt: prompt })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentGameId = data.game_id;
+                    gameExplanation = data.explanation;
+                    showResult(true);
+                } else {
+                    showError(true, data.error || 'Failed to generate game');
+                }
+            } catch (error) {
+                showError(true, 'Network error: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        });
+    </script>
+</body>
+</html>
